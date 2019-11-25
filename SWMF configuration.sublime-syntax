@@ -1,0 +1,114 @@
+%YAML 1.2
+---
+#
+# SWMF configuration file syntax highlighting for Sublime 3.
+# To install, place this file in Sublime 3/Packages/User/
+# The file name should be "SWMF configuration.sublime-syntax"
+# The file automatically highlights files ending in .in and .IN and
+# it can also be set manually in View/Syntax/User/SWMF configuration
+#
+# The rules are based on the SWMF manual section 3.2.2 - Commands, Parameters, and Comments
+#
+file_extensions:
+  - in
+  - IN
+scope: source
+
+variables:
+  float: '[+\-]?(?=\.\d|\d)(?:0|[1-9]\d*)?(?:\.\d*)?(?:\d[eE][+\-]?\d+)?'
+  integer: '[+\- ]?[0-9]+'
+  logical: '(?:\.true\.|\.false\.|T|F)'
+  string: '(?:\S+ ? ?)*'  # String tokens can have up to two spaces in between.
+
+contexts:
+
+  main:
+   - include: comment
+   - include: marker
+   - include: run_stop_end
+   - include: command
+
+  comment:
+    # All lines that do not start with the # character are comments.
+    # This means entirely blank lines are comments, which is OK.
+    - match: '^[^#]'
+      push: inside_comment
+
+  inside_comment:
+    # When the rest of the line is a comment.
+    - meta_scope: comment
+    - match: '$\n?'
+      pop: true
+
+  marker:
+    # These are #BEGIN_COMP and #END_COMP.
+    # They take two-letter component id (on the same line).
+    # The rest of the line is treated as a comment.
+    - match: '^(#(?:BEGIN|END)_COMP) ([A-Z][A-Z])((?: |\t).*)?\n'
+      captures:
+        1: entity.name
+        2: string
+        3: comment
+
+  run_stop_end:
+    # Special marking of the #RUN, #STOP and #END keywords.
+    - match: '(^#(?:RUN|STOP|END))+((?: |\t).*)?\n'
+      captures:
+        1: keyword
+        2: comment
+      push: inside_command
+
+  command:
+    # commands begin at the line start with a '#' and are followed by
+    # letters, numbers, and the underscore character.
+    - match: '^(#[a-zA-Z0-9_]+)((?:  |\t).*)?\n'
+      captures:
+        1: support.function
+        2: comment
+      push: inside_command
+
+  inside_command:
+    # Assuming here that all commands are separated by a blank line.
+    # This need not be the case but is good practice.
+    # The rest of the line is a commment.
+    # - meta_scope: support.function
+    - match: '^\s*\n$'
+      pop: true
+    # Check for the usual parameter types
+    - include: param-integer
+    - include: param-float
+    - include: param-logical
+    - include: param-string
+    # Re-include these here in case there is no blank line between # lines.
+    - include: marker
+    - include: run_stop_end
+    - include: command
+
+  param-integer:
+    # Accept one space before and a comment after.
+    - match: '^ ?({{integer}})((?: |\t).*)?\n'
+      captures:
+        1: constant.numeric.integer
+        2: comment
+
+  param-float:
+    # Accept one space before and a comment after.
+    - match: '^ ?({{float}})((?: |\t).*)?\n'
+      captures:
+        1: constant.numeric.float
+        2: comment
+
+  param-logical:
+    # Accept one space before and a comment after.
+    - match: '^ ?({{logical}})((?: |\t).*)?\n'
+      captures:
+        1: constant.language
+        2: comment
+
+  param-string:
+    # Accept one space before and a comment after.
+    # Do not accept strings starting with #.
+    - match: '^(?!#) ? ?({{string}})((?: |\t).*)?\n'
+      captures:
+        1: string
+        2: comment
