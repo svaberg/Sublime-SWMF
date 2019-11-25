@@ -1,0 +1,20 @@
+Highlighting demo using Monokai dark theme.
+
+#COMMAND       Command
+-10            integer parameter
++1.1e6         float parameter
+T              Boolean parameter
+Hello  World   string parameter
+
+#BEGIN_COMP SC  Marker and component ID
+
+#COMMAND
+15
+Test string   Comment
+
+#END_COMP SC  End marker and component ID
+
+#COMMAND
+500           Comment
+
+#END

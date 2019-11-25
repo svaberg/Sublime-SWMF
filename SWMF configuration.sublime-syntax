@@ -2,12 +2,6 @@
 ---
 #
 # SWMF configuration file syntax highlighting for Sublime 3.
-# To install, place this file in Sublime 3/Packages/User/
-# The file name should be "SWMF configuration.sublime-syntax"
-# The file automatically highlights files ending in .in and .IN and
-# it can also be set manually in View/Syntax/User/SWMF configuration
-#
-# The rules are based on the SWMF manual section 3.2.2 - Commands, Parameters, and Comments
 #
 file_extensions:
   - in
@@ -25,7 +19,7 @@ contexts:
   main:
    - include: comment
    - include: marker
-   - include: run_stop_end
+   - include: run_end
    - include: command
 
   comment:
@@ -50,9 +44,9 @@ contexts:
         2: string
         3: comment
 
-  run_stop_end:
+  run_end:
     # Special marking of the #RUN, #STOP and #END keywords.
-    - match: '(^#(?:RUN|STOP|END))+((?: |\t).*)?\n'
+    - match: '(^#(?:RUN|END))+((?: |\t).*)?\n'
       captures:
         1: keyword
         2: comment
@@ -81,7 +75,7 @@ contexts:
     - include: param-string
     # Re-include these here in case there is no blank line between # lines.
     - include: marker
-    - include: run_stop_end
+    - include: run_end
     - include: command
 
   param-integer:
